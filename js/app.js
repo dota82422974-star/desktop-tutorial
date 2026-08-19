@@ -127,7 +127,7 @@ function updateResult() {
   const box = $('result'), big = $('resBig'), cap = $('resCap');
   const pill = $('resPill'), rows = $('resRows'), hint = $('resHint');
 
-  box.className = 'result';
+  box.className = 'screen';
   big.className = 'res-big';
 
   // 1-holat: yetarli ma'lumot yo'q
@@ -227,11 +227,14 @@ function render() {
   const wins = results.filter((r) => r.pnl >= 0).length;
 
   const hero = $('hero');
-  hero.className = 'hero' + (closed.length ? (total >= 0 ? ' up' : ' down') : '');
-  $('heroPnl').textContent = closed.length ? signed(total) + ' $' : '0.00 $';
-  $('heroPnl').className = 'hero-value' + (closed.length ? ' ' + cls(total) : '');
-  $('heroCount').textContent = items.length;
-  $('heroWin').textContent = closed.length ? Math.round((wins / closed.length) * 100) + '%' : '—';
+  hero.className = 'glass hero' + (closed.length ? (total >= 0 ? ' up' : ' down') : '');
+  $('heroPnl').innerHTML =
+    (closed.length ? signed(total) : '0.00') + '<i>$</i>';
+  $('chipCount').textContent = items.length + ' savdo';
+  $('chipWin').textContent =
+    (closed.length ? Math.round((wins / closed.length) * 100) + '%' : '—') + ' yutuq';
+
+  renderSpark(closed.map((i) => calc(i.sum, i.inPrice, i.outPrice, i.fee).pnl).reverse());
 
   $('listCount').textContent = items.length;
   $('listHead').style.display = items.length ? '' : 'none';
@@ -253,19 +256,34 @@ function render() {
   bindItems();
 }
 
+// oxirgi savdolarning mini ustunlari
+function renderSpark(pnls) {
+  const el = $('spark');
+  const list = pnls.slice(-14);
+  if (list.length < 2) { el.innerHTML = ''; el.style.display = 'none'; return; }
+  el.style.display = '';
+  const max = Math.max(...list.map((p) => Math.abs(p))) || 1;
+  el.innerHTML = list.map((p, n) => {
+    const hgt = Math.max(20, Math.round((Math.abs(p) / max) * 100));
+    return `<b class="${p >= 0 ? 'u' : 'd'}" style="height:${hgt}%;animation-delay:${n * 28}ms"></b>`;
+  }).join('');
+}
+
 function itemHtml(i) {
   const open = !(i.outPrice > 0);
   const qty = i.inPrice > 0 ? i.sum / i.inPrice : 0;
   const h = coinHue(i.coin);
   const av = `background:linear-gradient(140deg,hsl(${h} 62% 48%),hsl(${(h + 45) % 360} 58% 34%))`;
 
-  let right, flow;
+  let right, flow, mood;
   if (open) {
+    mood = 'open';
     right = `<div class="item-pnl" style="color:var(--muted)">${money(i.sum)} $</div>
              <div class="item-pct" style="color:var(--dim)">qo'yilgan</div>`;
     flow = `${money(i.inPrice)} $ narxda olingan`;
   } else {
     const r = calc(i.sum, i.inPrice, i.outPrice, i.fee);
+    mood = r.pnl >= 0 ? 'win' : 'lose';
     right = `<div class="item-pnl ${cls(r.pnl)}">${signed(r.pnl)} $</div>
              <div class="item-pct ${cls(r.pnl)}">${pct(r.pct)}</div>`;
     flow = `${money(i.sum)} → ${money(r.net)} $`;
@@ -273,14 +291,17 @@ function itemHtml(i) {
 
   const closeRow = open ? `
     <div class="close-row">
-      <div class="wrap">
-        <input type="text" inputmode="decimal" placeholder="Sotgan narxim" data-out="${i.id}">
-        <span class="suffix">$</span>
+      <div class="box">
+        <span class="box-lbl">Sotgan narxim</span>
+        <div class="box-in">
+          <input type="text" inputmode="decimal" placeholder="0.00" data-out="${i.id}">
+          <span class="unit">$</span>
+        </div>
       </div>
-      <button class="btn primary" data-close="${i.id}">Yopish</button>
+      <button class="mini-cta" data-close="${i.id}">Yopish</button>
     </div>` : '';
 
-  return `<div class="item ${open ? 'open' : ''}">
+  return `<div class="item ${mood}">
     <div class="item-top">
       <div class="avatar" style="${av}">${escapeHtml(i.coin.slice(0, 4))}</div>
       <div class="item-id">

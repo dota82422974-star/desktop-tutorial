@@ -1,56 +1,72 @@
-# Spot Jurnal
+# Hisob-kitob
 
-Spot savdo uchun hisob-kitob daftari. iPhone'da xuddi oddiy ilovadek ishlaydi (PWA).
-Pul talab qilmaydi: App Store ham, Apple Developer ($99/yil) ham kerak emas.
+Spot savdo uchun foyda-zarar hisoblagichi. Bitta ekran, tepasida sozlamalar (⚙).
+iPhone bosh ekraniga o'rnatiladi va oddiy ilovadek ishlaydi (PWA).
+Pul talab qilmaydi: App Store ham, Apple Developer obunasi ($99/yil) ham kerak emas.
 
-## Nima qila oladi
+## Qanday ishlaydi
 
-- **Sotib olish / sotish** yozuvlari: coin, narx, miqdor, komissiya, sana, izoh
-- **Ochiq pozitsiyalar**: o'rtacha tannarx, qo'yilgan pul, joriy qiymat, foyda %
-- **Yopilgan savdolar bo'yicha real foyda** — har bir sotishda alohida hisoblanadi
-- **Joriy narxlar**: Binance'dan bir tugma bilan yangilash yoki qo'lda kiritish
-- **Statistika**: yutuq foizi, eng yaxshi/yomon savdo, profit factor, komissiya, oylar va coinlar kesimi
-- **Zaxira nusxa**: JSON faylga yuklab olish va tiklash
-- Internetsiz ham ochiladi, ma'lumot telefonning o'zida saqlanadi
+Ekranning yuqorisida hisoblagich:
 
-## Foyda qanday hisoblanadi
+| Maydon | Ma'nosi |
+|---|---|
+| **Coin** | SOL, BTC, ETH... |
+| **Qancha kirdim (USDT)** | savdoga qo'ygan pulingiz, masalan 300 |
+| **Kirish narxi** | qaysi narxda kirgansiz |
+| **Chiqish narxi** | qaysi narxda chiqqansiz (bo'sh qoldirsangiz — ochiq savdo) |
+| **Komissiya %** | ikki tomonlama komissiya, Binance spotda odatda 0.1 |
 
-**O'rtacha tannarx (average cost)** usuli:
+Yozayotganingizning o'zidayoq natija chiqadi: **foyda/zarar USDT'da, foizda, nechta dona
+olganingiz va qo'lga tegadigan summa**. `Saqlash` bosilsa — pastdagi ro'yxatga tushadi.
 
-- Sotib olganda: `tannarx += narx × miqdor + komissiya`
-- Sotganda: `foyda = (sotuv summasi − komissiya) − o'rtacha tannarx × sotilgan miqdor`
+Ochiq savdolar sariq ramka bilan turadi; chiqqaningizda ro'yxatdagi
+`Chiqish narxi` katakchasiga narxni yozib `Yopish` ni bossangiz, foyda hisoblanadi.
 
-Misol: 0.1 BTC 60 000 da, yana 0.1 BTC 70 000 da olindi (komissiya 6 va 7 USDT)
-→ o'rtacha tannarx 65 065. 0.1 BTC 80 000 ga sotildi (komissiya 8)
-→ real foyda `(8000 − 8) − 6506.5 = +1485.50 USDT`.
+Ro'yxat tepasida uchta ko'rsatkich: **jami foyda**, **yutuq foizi**, **savdolar soni**.
+
+## Formula
+
+```
+miqdor    = summa ÷ kirish narxi
+chiqish   = miqdor × chiqish narxi
+komissiya = (summa + chiqish) × komissiya% ÷ 100
+foyda     = chiqish − summa − komissiya
+```
+
+Misol: SOL, 300 USDT, 20 → 24, komissiya 0.1%
+→ 15 dona · chiqish 360 · komissiya 0.66 · **foyda +59.34 USDT (+19.78%)** · qo'lga 359.34
+
+## Sozlamalar (⚙)
+
+- **Doimiy komissiya %** — har safar avtomatik qo'yiladi
+- **Zaxira nusxa yuklab olish / tiklash** — JSON fayl
+- **Hammasini o'chirish**
 
 ## Internetga qo'yish (bepul, GitHub Pages)
 
-1. GitHub'da shu repo → **Settings** → chapdan **Pages**
+1. Repo → **Settings** → **Pages**
 2. *Source*: **Deploy from a branch**
 3. *Branch*: `main` (yoki `claude/iphone-app-distribution-8l05af`), papka `/ (root)` → **Save**
-4. 1-2 daqiqadan keyin havola tayyor bo'ladi:
-   `https://dota82422974-star.github.io/desktop-tutorial/`
+4. 1-2 daqiqadan keyin: `https://dota82422974-star.github.io/desktop-tutorial/`
 
 ## iPhone'ga o'rnatish
 
-1. Havolani **Safari**'da oching (Chrome emas — Safari bo'lishi shart)
-2. Pastdagi **Ulashish** tugmasi (⬆ kvadrat ichida strelka)
-3. **"Add to Home Screen" / "Bosh ekranga qo'shish"**
-4. **Add** → ekranda ikonka paydo bo'ladi
+1. Havolani **Safari**'da oching (Chrome emas)
+2. Pastdagi **Ulashish** tugmasi (⬆)
+3. **"Add to Home Screen"** → **Add**
 
-Shundan keyin ilova to'liq ekranda, brauzer paneli ko'rinmagan holda ochiladi.
+Ilova to'liq ekranda, brauzer panelisiz ochiladi va internetsiz ham ishlaydi.
 
 ## Muhim
 
-Ma'lumot faqat **shu telefon xotirasida** (localStorage) saqlanadi — serverga hech narsa
-yuborilmaydi. Safari xotirani tozalasa yoki ilova o'chirilsa, yozuvlar yo'qoladi.
+Ma'lumot faqat **shu telefon xotirasida** saqlanadi, hech qayerga yuborilmaydi.
+Safari xotirani tozalasa yoki ilova o'chirilsa — yozuvlar yo'qoladi.
 Shuning uchun vaqti-vaqti bilan **⚙ → Zaxira nusxa yuklab olish** ni bosib turing.
 
 ## Fayllar
 
 ```
-index.html              — barcha ekranlar
+index.html              — ekran
 css/style.css           — dizayn (qorong'i mavzu)
 js/app.js               — hisob-kitob va mantiq
 manifest.webmanifest    — ilova nomi, ikonka, rang

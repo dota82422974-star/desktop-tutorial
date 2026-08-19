@@ -1,7 +1,7 @@
 {
-  "name": "Spot Jurnal",
-  "short_name": "Spot Jurnal",
-  "description": "Spot savdo uchun hisob-kitob daftari",
+  "name": "Hisob-kitob",
+  "short_name": "Hisob-kitob",
+  "description": "Spot savdo foyda-zarar hisob-kitobi",
   "lang": "uz",
   "start_url": "./index.html",
   "scope": "./",

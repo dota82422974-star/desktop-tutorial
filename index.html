@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
 <title>Hisob-kitob</title>
-<meta name="description" content="Spot savdo foyda-zarar hisob-kitobi">
+<meta name="description" content="Spot savdo foyda-zarar hisoblagichi">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0b0f17">
+<meta name="theme-color" content="#0a0e16">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Hisob-kitob">
@@ -17,79 +17,111 @@
 <body>
 
 <header class="topbar">
-  <div class="brand"><span class="logo">▲</span> Hisob-kitob</div>
-  <button class="icon-btn" id="btnSettings" aria-label="Sozlamalar">⚙</button>
+  <div class="brand">
+    <svg class="brand-icon" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="4"  y="10" width="4" height="9"  rx="1.2" fill="#f6465d"/>
+      <rect x="5.4" y="7"  width="1.2" height="14" rx="0.6"   fill="#f6465d"/>
+      <rect x="10" y="6"  width="4" height="10" rx="1.2" fill="#26c281"/>
+      <rect x="11.4" y="3" width="1.2" height="16" rx="0.6"  fill="#26c281"/>
+      <rect x="16" y="3"  width="4" height="8"  rx="1.2" fill="#26c281"/>
+      <rect x="17.4" y="1" width="1.2" height="13" rx="0.6"  fill="#26c281"/>
+    </svg>
+    <span>Hisob-kitob</span>
+  </div>
+  <button class="icon-btn" id="btnSettings" aria-label="Sozlamalar">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+      <circle cx="12" cy="12" r="3.2"/>
+      <path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-1.8-.3 1.6 1.6 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0 .3-1.8 1.6 1.6 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H9a1.6 1.6 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V9a1.6 1.6 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1z"/>
+    </svg>
+  </button>
 </header>
 
 <main>
 
+  <!-- ===== JAMI NATIJA ===== -->
+  <section class="hero" id="hero">
+    <div class="hero-label">Jami foyda</div>
+    <div class="hero-value" id="heroPnl">0.00</div>
+    <div class="hero-meta">
+      <span><b id="heroCount">0</b> savdo</span>
+      <i></i>
+      <span><b id="heroWin">—</b> yutuq</span>
+    </div>
+  </section>
+
   <!-- ===== HISOBLAGICH ===== -->
-  <div class="card calc">
+  <section class="card">
+    <h2 class="card-title">Savdoni hisoblash</h2>
+
     <div class="two">
-      <div>
-        <label for="fCoin">Coin</label>
+      <div class="field">
+        <label for="fCoin">Qaysi coin</label>
         <input type="text" id="fCoin" placeholder="SOL" autocapitalize="characters"
                spellcheck="false" autocomplete="off" list="coinList">
         <datalist id="coinList"></datalist>
       </div>
-      <div>
-        <label for="fSum">Qancha kirdim (USDT)</label>
-        <input type="text" id="fSum" inputmode="decimal" placeholder="300">
+      <div class="field">
+        <label for="fSum">Necha pul qo'ydim</label>
+        <div class="wrap">
+          <input type="text" id="fSum" inputmode="decimal" placeholder="300">
+          <span class="suffix">USDT</span>
+        </div>
       </div>
     </div>
 
     <div class="two">
-      <div>
-        <label for="fIn">Kirish narxi</label>
-        <input type="text" id="fIn" inputmode="decimal" placeholder="20">
+      <div class="field">
+        <label for="fIn">Olgan narxim</label>
+        <div class="wrap">
+          <input type="text" id="fIn" inputmode="decimal" placeholder="20">
+          <span class="suffix">$</span>
+        </div>
       </div>
-      <div>
-        <label for="fOut">Chiqish narxi</label>
-        <input type="text" id="fOut" inputmode="decimal" placeholder="24">
-      </div>
-    </div>
-
-    <div class="two">
-      <div>
-        <label for="fFee">Komissiya %</label>
-        <input type="text" id="fFee" inputmode="decimal" placeholder="0.1">
-      </div>
-      <div>
-        <label for="fDate">Sana</label>
-        <input type="date" id="fDate">
+      <div class="field">
+        <label for="fOut">Sotgan narxim</label>
+        <div class="wrap">
+          <input type="text" id="fOut" inputmode="decimal" placeholder="24">
+          <span class="suffix">$</span>
+        </div>
       </div>
     </div>
 
-    <div class="result" id="result">
-      <div class="res-main" id="resPnl">0.00</div>
-      <div class="res-pct" id="resPct">0.00%</div>
-      <div class="res-sub" id="resSub">Narxlarni kiriting</div>
+    <div class="mini-row">
+      <span>Sana</span>
+      <input type="date" id="fDate">
+    </div>
+    <div class="mini-row">
+      <span>Komissiya</span>
+      <button class="mini-btn" id="feeBtn">0.1%</button>
     </div>
 
-    <div class="btn-row">
-      <button class="btn primary" id="btnSave">Saqlash</button>
-      <button class="btn ghost" id="btnReset">Tozalash</button>
-    </div>
-    <p class="hint center" id="openHint">Chiqish narxini bo'sh qoldirsangiz — ochiq savdo sifatida saqlanadi.</p>
-  </div>
+    <!-- natija -->
+    <div class="result empty" id="result">
+      <div class="res-cap" id="resCap">Natija</div>
+      <div class="res-big" id="resBig">—</div>
+      <div class="res-pill hidden" id="resPill">0.00%</div>
 
-  <!-- ===== JAMI ===== -->
-  <div class="totals">
-    <div class="tot">
-      <span>Jami foyda</span>
-      <b id="totPnl">0.00</b>
+      <div class="res-rows hidden" id="resRows">
+        <div><span>Miqdor</span><b id="rQty">—</b></div>
+        <div><span>Sotuvdan tushdi</span><b id="rOut">—</b></div>
+        <div><span>Komissiya</span><b id="rFee">—</b></div>
+        <div class="strong"><span>Qo'lga tegadi</span><b id="rNet">—</b></div>
+      </div>
+
+      <div class="res-hint" id="resHint">Yuqoridagi kataklarni to'ldiring</div>
     </div>
-    <div class="tot">
-      <span>Yutuq</span>
-      <b id="totWin">—</b>
-    </div>
-    <div class="tot">
-      <span>Savdolar</span>
-      <b id="totCount">0</b>
-    </div>
-  </div>
+
+    <button class="btn primary" id="btnSave">Savdoni saqlash</button>
+    <button class="btn text" id="btnReset">Tozalash</button>
+    <p class="note">Hali sotmagan bo'lsangiz — <b>“Sotgan narxim”</b> ni bo'sh qoldiring.
+       Savdo ochiq holda saqlanadi, sotganingizda narxni yozib yopasiz.</p>
+  </section>
 
   <!-- ===== RO'YXAT ===== -->
+  <section class="list-head" id="listHead">
+    <h2 class="card-title">Savdolarim</h2>
+    <span class="count" id="listCount">0</span>
+  </section>
   <div id="list" class="list"></div>
 
 </main>
@@ -97,21 +129,34 @@
 <!-- ===== SOZLAMALAR ===== -->
 <div class="modal hidden" id="settingsModal">
   <div class="sheet">
+    <div class="grabber"></div>
     <div class="sheet-head">
       <h2>Sozlamalar</h2>
-      <button class="icon-btn" id="btnCloseSettings">✕</button>
+      <button class="icon-btn small" id="btnCloseSettings" aria-label="Yopish">✕</button>
     </div>
 
-    <label for="sFee">Doimiy komissiya %</label>
-    <input type="text" id="sFee" inputmode="decimal" placeholder="0.1">
-    <p class="hint">Har safar avtomatik qo'yiladi (Binance spot odatda 0.1%).</p>
+    <div class="field">
+      <label for="sFee">Komissiya foizi</label>
+      <div class="wrap">
+        <input type="text" id="sFee" inputmode="decimal" placeholder="0.1">
+        <span class="suffix">%</span>
+      </div>
+      <p class="note">Har bir savdoga avtomatik qo'shiladi. Binance spotda odatda <b>0.1%</b>.</p>
+    </div>
 
-    <p class="muted small">Ma'lumot faqat shu telefonda saqlanadi. Vaqti-vaqti bilan zaxira nusxa olib turing.</p>
-    <button class="btn ghost big" id="btnExport">⬇ Zaxira nusxa yuklab olish</button>
-    <button class="btn ghost big" id="btnImport">⬆ Zaxiradan tiklash</button>
+    <div class="divider"></div>
+
+    <h3 class="sub">Ma'lumot xavfsizligi</h3>
+    <p class="note">Yozuvlaringiz faqat shu telefonda saqlanadi, hech qayerga yuborilmaydi.
+       Telefon almashtirsangiz yoki Safari xotirasi tozalansa — yo'qoladi.
+       Shuning uchun vaqti-vaqti bilan zaxira nusxa olib turing.</p>
+    <button class="btn ghost" id="btnExport">Zaxira nusxa yuklab olish</button>
+    <button class="btn ghost" id="btnImport">Zaxiradan tiklash</button>
     <input type="file" id="fileImport" accept="application/json" hidden>
-    <button class="btn danger big" id="btnClear">🗑 Hammasini o'chirish</button>
-    <p class="muted small center" id="version"></p>
+
+    <div class="divider"></div>
+    <button class="btn danger" id="btnClear">Hamma yozuvni o'chirish</button>
+    <p class="note center" id="version"></p>
   </div>
 </div>
 

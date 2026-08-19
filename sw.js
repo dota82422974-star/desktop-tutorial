@@ -1,7 +1,7 @@
 /* Offline ishlashi uchun oddiy service worker.
    Ilova yangilanganda CACHE nomidagi raqamni oshiring. */
 
-const CACHE = 'hisob-kitob-v2';
+const CACHE = 'hisob-kitob-v3';
 const ASSETS = [
   './',
   './index.html',

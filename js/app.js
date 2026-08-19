@@ -1,7 +1,7 @@
 /* Hisob-kitob — spot savdo foyda/zarar daftari.
    Bitta ekran. Ma'lumot faqat qurilmaning o'zida (localStorage) saqlanadi. */
 
-const VERSION = '2.0.0';
+const VERSION = '2.1.0';
 const KEY = 'spot_hisob_v2';
 
 let state = load();
@@ -81,25 +81,27 @@ function escapeHtml(s) {
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
+// coin nomidan barqaror rang — har bir coin o'z rangini oladi
+function coinHue(coin) {
+  let h = 0;
+  for (let i = 0; i < coin.length; i++) h = (h * 131 + coin.charCodeAt(i) * 7) >>> 0;
+  return (h * 137) % 360;
+}
+
 let toastTimer;
 function toast(msg) {
   const t = $('toast');
   t.textContent = msg;
   t.classList.remove('hidden');
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.add('hidden'), 2600);
+  toastTimer = setTimeout(() => t.classList.add('hidden'), 2400);
 }
 
 /* ---------------- asosiy hisob ----------------
-   sum      — kirishda qo'yilgan pul (USDT)
-   inPrice  — kirish narxi
-   outPrice — chiqish narxi
-   feePct   — har ikki tomondagi komissiya foizi
-
-   miqdor   = sum / inPrice
-   chiqish  = miqdor × outPrice
-   komissiya= (sum + chiqish) × feePct/100
-   foyda    = chiqish − sum − komissiya                                */
+   miqdor    = qo'yilgan pul ÷ olgan narx
+   sotuv     = miqdor × sotgan narx
+   komissiya = (qo'yilgan pul + sotuv) × komissiya% ÷ 100
+   foyda     = sotuv − qo'yilgan pul − komissiya                  */
 
 function calc(sum, inPrice, outPrice, feePct) {
   const qty = inPrice > 0 ? sum / inPrice : 0;
@@ -109,49 +111,72 @@ function calc(sum, inPrice, outPrice, feePct) {
   return {
     qty, out, fee, pnl,
     pct: sum > 0 ? (pnl / sum) * 100 : 0,
-    net: sum + pnl           // qo'lga tegadigan pul
+    net: sum + pnl            // qo'lga tegadigan pul
   };
 }
 
-/* ---------------- hisoblagich (jonli natija) ---------------- */
+/* ---------------- jonli natija ---------------- */
 
 function updateResult() {
+  const coin = normCoin($('fCoin').value);
   const sum = num($('fSum').value);
   const inP = num($('fIn').value);
   const outP = num($('fOut').value);
-  const fee = num($('fFee').value);
+  const fee = state.fee;
 
-  const elPnl = $('resPnl'), elPct = $('resPct'), elSub = $('resSub');
+  const box = $('result'), big = $('resBig'), cap = $('resCap');
+  const pill = $('resPill'), rows = $('resRows'), hint = $('resHint');
 
+  box.className = 'result';
+  big.className = 'res-big';
+
+  // 1-holat: yetarli ma'lumot yo'q
   if (!(sum > 0 && inP > 0)) {
-    elPnl.textContent = '0.00';
-    elPnl.className = 'res-main';
-    elPct.textContent = '';
-    elSub.textContent = 'Summa va kirish narxini kiriting';
+    cap.textContent = 'Natija';
+    big.textContent = '0.00 $';
+    big.classList.add('dim');
+    pill.classList.add('hidden');
+    rows.classList.add('hidden');
+    hint.classList.remove('hidden');
+    hint.textContent = 'Qancha pul qo\'yganingiz va olgan narxingizni yozing';
     return;
   }
 
   const qty = sum / inP;
 
+  // 2-holat: hali sotilmagan — faqat nechta dona olinganini ko'rsatamiz
   if (!(outP > 0)) {
-    elPnl.textContent = qtyFmt(qty);
-    elPnl.className = 'res-main';
-    elPct.textContent = 'dona';
-    elSub.innerHTML = `${money(sum)} USDT ÷ ${money(inP)}
-      <br>Chiqish narxini kiritsangiz foyda ko'rinadi`;
+    cap.textContent = 'Nechta oldingiz';
+    big.textContent = qtyFmt(qty) + (coin ? ' ' + coin : '');
+    pill.classList.add('hidden');
+    rows.classList.add('hidden');
+    hint.classList.remove('hidden');
+    hint.textContent = 'Sotgan narxingizni yozsangiz — foyda ko\'rinadi';
     return;
   }
 
+  // 3-holat: to'liq hisob
   const r = calc(sum, inP, outP, fee);
-  elPnl.textContent = signed(r.pnl);
-  elPnl.className = 'res-main ' + cls(r.pnl);
-  elPct.textContent = pct(r.pct);
-  elPct.className = 'res-pct ' + cls(r.pct);
-  elSub.innerHTML = `${qtyFmt(r.qty)} dona · qo'lga: <b>${money(r.net)}</b> USDT`
-    + (r.fee > 0 ? ` · komissiya: ${money(r.fee)}` : '');
+  const up = r.pnl >= 0;
+
+  box.classList.add(up ? 'up' : 'down');
+  cap.textContent = up ? 'Foyda' : 'Zarar';
+  big.textContent = signed(r.pnl) + ' $';
+  big.classList.add(cls(r.pnl));
+
+  pill.textContent = pct(r.pct);
+  pill.className = 'res-pill ' + cls(r.pnl);
+
+  rows.classList.remove('hidden');
+  $('rQty').textContent = qtyFmt(r.qty) + (coin ? ' ' + coin : '');
+  $('rOut').textContent = money(r.out) + ' $';
+  $('rFee').textContent = money(r.fee) + ' $';
+  $('rNet').textContent = money(r.net) + ' $';
+
+  hint.classList.add('hidden');
 }
 
-['fSum', 'fIn', 'fOut', 'fFee'].forEach((id) =>
+['fCoin', 'fSum', 'fIn', 'fOut'].forEach((id) =>
   $(id).addEventListener('input', updateResult));
 
 /* ---------------- saqlash ---------------- */
@@ -161,35 +186,35 @@ $('btnSave').addEventListener('click', () => {
   const sum = num($('fSum').value);
   const inP = num($('fIn').value);
   const outRaw = $('fOut').value;
-  const fee = num($('fFee').value);
   const date = $('fDate').value || todayISO();
 
-  if (!coin) return toast('Coin nomini yozing (SOL, BTC...)');
-  if (!(sum > 0)) return toast('Qancha pul kirganingizni yozing');
-  if (!(inP > 0)) return toast('Kirish narxini yozing');
+  if (!coin) return toast('Coin nomini yozing — SOL, BTC...');
+  if (!(sum > 0)) return toast('Qancha pul qo\'yganingizni yozing');
+  if (!(inP > 0)) return toast('Olgan narxingizni yozing');
 
   state.items.push({
     id: Date.now(),
     coin, sum, inPrice: inP,
     outPrice: has(outRaw) ? num(outRaw) : null,
-    fee, date
+    fee: state.fee,
+    date
   });
   save();
   resetForm();
   render();
-  toast('Saqlandi');
+  toast(has(outRaw) ? 'Savdo saqlandi' : 'Ochiq savdo saqlandi');
 });
 
 $('btnReset').addEventListener('click', () => { resetForm(); toast('Tozalandi'); });
 
 function resetForm() {
   ['fCoin', 'fSum', 'fIn', 'fOut'].forEach((id) => { $(id).value = ''; });
-  $('fFee').value = state.fee;
   $('fDate').value = todayISO();
+  $('feeBtn').textContent = state.fee + '%';
   updateResult();
 }
 
-/* ---------------- ro'yxat va jami ---------------- */
+/* ---------------- ro'yxat ---------------- */
 
 function render() {
   const items = [...state.items].sort(
@@ -201,13 +226,26 @@ function render() {
   const total = results.reduce((s, r) => s + r.pnl, 0);
   const wins = results.filter((r) => r.pnl >= 0).length;
 
-  $('totPnl').textContent = signed(total);
-  $('totPnl').className = cls(total);
-  $('totWin').textContent = closed.length ? Math.round((wins / closed.length) * 100) + '%' : '—';
-  $('totCount').textContent = items.length;
+  const hero = $('hero');
+  hero.className = 'hero' + (closed.length ? (total >= 0 ? ' up' : ' down') : '');
+  $('heroPnl').textContent = closed.length ? signed(total) + ' $' : '0.00 $';
+  $('heroPnl').className = 'hero-value' + (closed.length ? ' ' + cls(total) : '');
+  $('heroCount').textContent = items.length;
+  $('heroWin').textContent = closed.length ? Math.round((wins / closed.length) * 100) + '%' : '—';
 
-  $('list').innerHTML = items.length ? items.map(itemHtml).join('')
-    : `<div class="empty">Hali yozuv yo'q.<br>Yuqorida coin, summa va narxlarni kiriting.</div>`;
+  $('listCount').textContent = items.length;
+  $('listHead').style.display = items.length ? '' : 'none';
+
+  $('list').innerHTML = items.length
+    ? items.map(itemHtml).join('')
+    : `<div class="empty-state">
+         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+              stroke-linecap="round" stroke-linejoin="round">
+           <path d="M5 20V11M12 20V4m7 16v-6"/>
+         </svg>
+         <p>Hali savdo qo'shilmagan.<br>Yuqoridagi kataklarni to'ldirib
+            <b>“Savdoni saqlash”</b> ni bosing.</p>
+       </div>`;
 
   $('coinList').innerHTML = [...new Set(state.items.map((i) => i.coin))]
     .sort().map((c) => `<option value="${escapeHtml(c)}">`).join('');
@@ -218,30 +256,34 @@ function render() {
 function itemHtml(i) {
   const open = !(i.outPrice > 0);
   const qty = i.inPrice > 0 ? i.sum / i.inPrice : 0;
+  const h = coinHue(i.coin);
+  const av = `background:linear-gradient(140deg,hsl(${h} 62% 48%),hsl(${(h + 45) % 360} 58% 34%))`;
 
-  const right = open
-    ? `<div class="item-pnl muted">${money(i.sum)}</div>
-       <div class="item-pct muted">qo'yilgan</div>`
-    : (() => {
-        const r = calc(i.sum, i.inPrice, i.outPrice, i.fee);
-        return `<div class="item-pnl ${cls(r.pnl)}">${signed(r.pnl)}</div>
-                <div class="item-pct ${cls(r.pnl)}">${pct(r.pct)}</div>`;
-      })();
+  let right, flow;
+  if (open) {
+    right = `<div class="item-pnl" style="color:var(--muted)">${money(i.sum)} $</div>
+             <div class="item-pct" style="color:var(--dim)">qo'yilgan</div>`;
+    flow = `${money(i.inPrice)} $ narxda olingan`;
+  } else {
+    const r = calc(i.sum, i.inPrice, i.outPrice, i.fee);
+    right = `<div class="item-pnl ${cls(r.pnl)}">${signed(r.pnl)} $</div>
+             <div class="item-pct ${cls(r.pnl)}">${pct(r.pct)}</div>`;
+    flow = `${money(i.sum)} → ${money(r.net)} $`;
+  }
 
-  const flow = open
-    ? `${money(i.sum)} USDT · ${money(i.inPrice)} da kirdi`
-    : `${money(i.sum)} → ${money(calc(i.sum, i.inPrice, i.outPrice, i.fee).net)} USDT`;
-
-  const closeRow = open
-    ? `<div class="close-row">
-         <input type="text" inputmode="decimal" placeholder="Chiqish narxi" data-out="${i.id}">
-         <button class="btn primary sm" data-close="${i.id}">Yopish</button>
-       </div>`
-    : '';
+  const closeRow = open ? `
+    <div class="close-row">
+      <div class="wrap">
+        <input type="text" inputmode="decimal" placeholder="Sotgan narxim" data-out="${i.id}">
+        <span class="suffix">$</span>
+      </div>
+      <button class="btn primary" data-close="${i.id}">Yopish</button>
+    </div>` : '';
 
   return `<div class="item ${open ? 'open' : ''}">
     <div class="item-top">
-      <div>
+      <div class="avatar" style="${av}">${escapeHtml(i.coin.slice(0, 4))}</div>
+      <div class="item-id">
         <div class="item-coin">${escapeHtml(i.coin)}${open ? '<span class="tag">OCHIQ</span>' : ''}</div>
         <div class="item-flow">${flow}</div>
       </div>
@@ -250,7 +292,7 @@ function itemHtml(i) {
     ${closeRow}
     <div class="item-meta">
       <div class="meta-info">
-        <span>${money(i.inPrice)}${open ? '' : ' → ' + money(i.outPrice)}</span>
+        <span>${money(i.inPrice)}${open ? '' : ' → ' + money(i.outPrice)} $</span>
         <span>${qtyFmt(qty)} dona</span>
         <span>${dateFmt(i.date)}</span>
       </div>
@@ -272,7 +314,7 @@ function bindItems() {
       const id = b.dataset.close;
       const inp = document.querySelector(`[data-out="${id}"]`);
       const v = num(inp && inp.value);
-      if (!(v > 0)) return toast('Chiqish narxini yozing');
+      if (!(v > 0)) { if (inp) inp.focus(); return toast('Sotgan narxingizni yozing'); }
       const item = state.items.find((i) => String(i.id) === id);
       if (!item) return;
       item.outPrice = v;
@@ -282,22 +324,24 @@ function bindItems() {
 
 /* ---------------- sozlamalar ---------------- */
 
-$('btnSettings').addEventListener('click', () => {
+function openSettings() {
   $('sFee').value = state.fee;
   $('settingsModal').classList.remove('hidden');
-});
+}
+function closeSettings() { $('settingsModal').classList.add('hidden'); }
+
+$('btnSettings').addEventListener('click', openSettings);
+$('feeBtn').addEventListener('click', openSettings);
 $('btnCloseSettings').addEventListener('click', closeSettings);
 $('settingsModal').addEventListener('click', (e) => {
   if (e.target.id === 'settingsModal') closeSettings();
 });
-function closeSettings() { $('settingsModal').classList.add('hidden'); }
 
-$('sFee').addEventListener('change', () => {
+$('sFee').addEventListener('input', () => {
   state.fee = num($('sFee').value);
   save();
-  $('fFee').value = state.fee;
+  $('feeBtn').textContent = state.fee + '%';
   updateResult();
-  toast('Komissiya saqlandi');
 });
 
 $('version').textContent = 'Hisob-kitob v' + VERSION;
@@ -337,8 +381,8 @@ $('btnClear').addEventListener('click', () => {
   if (!confirm('HAMMA yozuv o\'chiriladi. Ishonchingiz komilmi?')) return;
   if (!confirm('Oxirgi ogohlantirish — qaytarib bo\'lmaydi!')) return;
   state = { items: [], fee: state.fee };
-  save(); render(); closeSettings();
-  toast('Tozalandi');
+  save(); resetForm(); render(); closeSettings();
+  toast('Hammasi tozalandi');
 });
 
 /* ---------------- ishga tushirish ---------------- */

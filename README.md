@@ -10,35 +10,36 @@ Ekranning yuqorisida hisoblagich:
 
 | Maydon | Ma'nosi |
 |---|---|
-| **Coin** | SOL, BTC, ETH... |
-| **Qancha kirdim (USDT)** | savdoga qo'ygan pulingiz, masalan 300 |
-| **Kirish narxi** | qaysi narxda kirgansiz |
-| **Chiqish narxi** | qaysi narxda chiqqansiz (bo'sh qoldirsangiz — ochiq savdo) |
-| **Komissiya %** | ikki tomonlama komissiya, Binance spotda odatda 0.1 |
+| **Qaysi coin** | SOL, BTC, ETH... |
+| **Necha pul qo'ydim** | savdoga qo'ygan pulingiz, masalan 300 USDT |
+| **Olgan narxim** | qaysi narxda kirgansiz |
+| **Sotgan narxim** | qaysi narxda chiqqansiz (bo'sh qoldirsangiz — ochiq savdo) |
+| **Sana / Komissiya** | pastdagi ikki kichik qatorda; komissiya ⚙ dan o'zgartiriladi |
 
-Yozayotganingizning o'zidayoq natija chiqadi: **foyda/zarar USDT'da, foizda, nechta dona
-olganingiz va qo'lga tegadigan summa**. `Saqlash` bosilsa — pastdagi ro'yxatga tushadi.
+Yozayotganingizning o'zidayoq natija ko'rinadi: katta raqamda **foyda yoki zarar**,
+ostida foiz, keyin qatorma-qator **miqdor, sotuvdan tushgan pul, komissiya va
+qo'lga tegadigan summa**. `Savdoni saqlash` bosilsa — pastdagi ro'yxatga tushadi.
 
-Ochiq savdolar sariq ramka bilan turadi; chiqqaningizda ro'yxatdagi
-`Chiqish narxi` katakchasiga narxni yozib `Yopish` ni bossangiz, foyda hisoblanadi.
+Ochiq savdolar sariq ramkada, "OCHIQ" belgisi bilan turadi; sotganingizda o'sha
+yozuvdagi `Sotgan narxim` katagiga narxni yozib `Yopish` ni bossangiz, foyda hisoblanadi.
 
-Ro'yxat tepasida uchta ko'rsatkich: **jami foyda**, **yutuq foizi**, **savdolar soni**.
+Eng tepada esa **jami foyda**, **savdolar soni** va **yutuq foizi** turadi.
 
 ## Formula
 
 ```
-miqdor    = summa ÷ kirish narxi
-chiqish   = miqdor × chiqish narxi
-komissiya = (summa + chiqish) × komissiya% ÷ 100
-foyda     = chiqish − summa − komissiya
+miqdor    = qo'ygan pul ÷ olgan narx
+sotuv     = miqdor × sotgan narx
+komissiya = (qo'ygan pul + sotuv) × komissiya% ÷ 100
+foyda     = sotuv − qo'ygan pul − komissiya
 ```
 
 Misol: SOL, 300 USDT, 20 → 24, komissiya 0.1%
-→ 15 dona · chiqish 360 · komissiya 0.66 · **foyda +59.34 USDT (+19.78%)** · qo'lga 359.34
+→ 15 dona · sotuvdan 360 · komissiya 0.66 · **foyda +59.34 $ (+19.78%)** · qo'lga 359.34
 
 ## Sozlamalar (⚙)
 
-- **Doimiy komissiya %** — har safar avtomatik qo'yiladi
+- **Komissiya foizi** — har safar avtomatik qo'yiladi
 - **Zaxira nusxa yuklab olish / tiklash** — JSON fayl
 - **Hammasini o'chirish**
 

@@ -6,7 +6,7 @@ Pul talab qilmaydi: App Store ham, Apple Developer obunasi ($99/yil) ham kerak e
 
 ## Qanday ishlaydi
 
-Ekranning yuqorisida hisoblagich:
+Eng tepada jami natija, ostida hisoblagich qatorlari:
 
 | Maydon | Ma'nosi |
 |---|---|
@@ -14,16 +14,16 @@ Ekranning yuqorisida hisoblagich:
 | **Necha pul qo'ydim** | savdoga qo'ygan pulingiz, masalan 300 USDT |
 | **Olgan narxim** | qaysi narxda kirgansiz |
 | **Sotgan narxim** | qaysi narxda chiqqansiz (bo'sh qoldirsangiz — ochiq savdo) |
-| **Sana / Komissiya** | pastdagi ikki kichik qatorda; komissiya ⚙ dan o'zgartiriladi |
+| **Sana / Komissiya** | oxirgi ikki qatorda; komissiya ⚙ dan ham o'zgartiriladi |
 
 Yozayotganingizning o'zidayoq natija ko'rinadi: katta raqamda **foyda yoki zarar**,
 ostida foiz, keyin qatorma-qator **miqdor, sotuvdan tushgan pul, komissiya va
 qo'lga tegadigan summa**. `Savdoni saqlash` bosilsa — pastdagi ro'yxatga tushadi.
 
-Ochiq savdolar sariq ramkada, "OCHIQ" belgisi bilan turadi; sotganingizda o'sha
-yozuvdagi `Sotgan narxim` katagiga narxni yozib `Yopish` ni bossangiz, foyda hisoblanadi.
+Ochiq savdolar "ochiq" belgisi bilan turadi; sotganingizda o'sha yozuvdagi
+`Sotgan narxim` katagiga narxni yozib `Yopish` ni bossangiz, foyda hisoblanadi.
 
-Eng tepada esa **jami foyda**, **savdolar soni** va **yutuq foizi** turadi.
+Eng tepada **jami natija**, **savdolar soni** va **yutuq foizi** turadi.
 
 ## Formula
 

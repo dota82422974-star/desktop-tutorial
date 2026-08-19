@@ -1,6 +1,7 @@
 # Hisob-kitob
 
-Spot savdo uchun foyda-zarar hisoblagichi. Bitta ekran, tepasida sozlamalar (⚙).
+Spot savdo uchun foyda-zarar hisoblagichi. Bitta ekran, yorug' (oq) uslub,
+tepasida sozlamalar (⚙).
 iPhone bosh ekraniga o'rnatiladi va oddiy ilovadek ishlaydi (PWA).
 Pul talab qilmaydi: App Store ham, Apple Developer obunasi ($99/yil) ham kerak emas.
 
